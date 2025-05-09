@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обратная связь по курсу "Project management"</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Используем шрифт Inter */
+        }
+        .rating-stars input[type="radio"] {
+            display: none; /* Скрываем стандартные радиокнопки */
+        }
+        .rating-stars label {
+            font-size: 2rem; /* Размер звезд */
+            color: #d1d5db; /* Цвет неактивной звезды (серый) */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .rating-stars input[type="radio"]:checked ~ label,
+        .rating-stars label:hover,
+        .rating-stars label:hover ~ label {
+            color: #f59e0b; /* Цвет активной/наведенной звезды (желтый) */
+        }
+        /* Чтобы звезды "загорались" слева направо при наведении */
+        .rating-stars input[type="radio"]:checked + label ~ label {
+            color: #d1d5db;
+        }
+         .rating-stars-container {
+            display: flex;
+            flex-direction: row-reverse; /* Разворачиваем порядок звезд для правильного :hover ~ label */
+            justify-content: flex-end;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-slate-700 text-gray-100 min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+
+    <div class="bg-slate-800 shadow-2xl rounded-xl p-6 sm:p-8 md:p-10 w-full max-w-3xl">
+        <header class="text-center mb-8">
+            <img src="https://placehold.co/150x50/0f172a/e0e7ff?text=Advanced+People" alt="Логотип Advanced People" class="mx-auto mb-4 h-12 rounded-lg">
+            <h1 class="text-3xl sm:text-4xl font-bold text-sky-400">Обратная связь по курсу</h1>
+            <p class="text-xl sm:text-2xl mt-2 text-sky-300">"Project management"</p>
+            <p class="text-md sm:text-lg mt-1 text-gray-400">Инструктор: Сергей Шумилов</p>
+            <p class="text-sm text-gray-500 mt-1">Компания: Advanced People</p>
+        </header>
+
+        <form id="feedbackForm" class="space-y-8">
+            <div>
+                <label for="studentName" class="block text-lg font-medium text-sky-300 mb-1">Ваше имя (необязательно):</label>
+                <input type="text" id="studentName" name="studentName" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150" placeholder="Иван Иванов">
+            </div>
+
+            <div>
+                <label for="overallSatisfaction" class="block text-lg font-medium text-sky-300 mb-2">1. Общая удовлетворенность курсом:</label>
+                <div class="rating-stars-container">
+                    <input type="radio" id="overall-5" name="overallSatisfaction" value="5"><label for="overall-5" title="Отлично">★</label>
+                    <input type="radio" id="overall-4" name="overallSatisfaction" value="4"><label for="overall-4" title="Хорошо">★</label>
+                    <input type="radio" id="overall-3" name="overallSatisfaction" value="3"><label for="overall-3" title="Удовлетворительно">★</label>
+                    <input type="radio" id="overall-2" name="overallSatisfaction" value="2"><label for="overall-2" title="Неудовлетворительно">★</label>
+                    <input type="radio" id="overall-1" name="overallSatisfaction" value="1"><label for="overall-1" title="Плохо">★</label>
+                </div>
+            </div>
+
+            <div>
+                <label for="recommendCourse" class="block text-lg font-medium text-sky-300 mb-2">2. Какова вероятность, что Вы порекомендуете этот курс коллегам/друзьям?</label>
+                <select id="recommendCourse" name="recommendCourse" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                    <option value="">Выберите вариант</option>
+                    <option value="10">10 - Обязательно порекомендую</option>
+                    <option value="9">9</option>
+                    <option value="8">8</option>
+                    <option value="7">7</option>
+                    <option value="6">6</option>
+                    <option value="5">5 - Возможно</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2">2</option>
+                    <option value="1">1 - Точно не порекомендую</option>
+                </select>
+            </div>
+
+            <h2 class="text-2xl font-semibold text-sky-400 pt-4 border-t border-slate-700">3. Оцените, пожалуйста, каждый модуль курса:</h2>
+            <div class="space-y-6">
+                </div>
+
+            <div>
+                <label for="likedMost" class="block text-lg font-medium text-sky-300 mb-1">4. Что Вам больше всего понравилось в курсе?</label>
+                <textarea id="likedMost" name="likedMost" rows="4" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150" placeholder="Например: практические задания, подача материала, ответы инструктора..."></textarea>
+            </div>
+
+            <div>
+                <label for="suggestions" class="block text-lg font-medium text-sky-300 mb-1">5. Ваши предложения по улучшению курса:</label>
+                <textarea id="suggestions" name="suggestions" rows="4" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150" placeholder="Что можно было бы добавить или изменить?"></textarea>
+            </div>
+             <div>
+                <label for="instructorFeedback" class="block text-lg font-medium text-sky-300 mb-1">6. Отзыв о работе инструктора (Сергей Шумилов):</label>
+                <textarea id="instructorFeedback" name="instructorFeedback" rows="4" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150" placeholder="Оцените ясность объяснений, ответы на вопросы, вовлеченность и т.д."></textarea>
+            </div>
+
+
+            <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50">
+                Отправить отзыв
+            </button>
+        </form>
+
+        <div id="resultsContainer" class="mt-10 p-6 bg-slate-700 rounded-lg shadow-inner hidden">
+            <h2 class="text-2xl font-semibold text-sky-400 mb-4">Спасибо за Ваш отзыв!</h2>
+            <p class="text-gray-300 mb-4">Пожалуйста, скопируйте текст ниже и сохраните его, или отправьте инструктору:</p>
+            <pre id="formDataJson" class="whitespace-pre-wrap break-all bg-slate-900 text-sky-300 p-4 rounded-md text-sm overflow-x-auto"></pre>
+            <button id="copyButton" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150">
+                Копировать данные
+            </button>
+            <p id="copyMessage" class="text-emerald-400 text-sm mt-2 hidden">Данные скопированы в буфер обмена!</p>
+        </div>
+    </div>
+
+    <footer class="text-center py-8 text-gray-500">
+        <p>&copy; 2025 Advanced People. Все права защищены.</p>
+    </footer>
+
+    <script>
+        const modules = [
+            "Модуль 1: Основные понятия и обзор проектного менеджмента",
+            "Модуль 2: «Мягкие навыки» (Soft Skills)",
+            "Модуль 3: Стадии проектов (Decision Gates)",
+            "Модуль 4: График и затраты проекта бюджетирование (Project Control)",
+            "Модуль 5: Основные результаты этапа оценки целесообразности и выбора концепции (Feasibility & Concept Select Deliverables)",
+            "Модуль 6: Базисное проектирование (Front End Engineering Design)",
+            "Модуль 7: Детальное проектирование (Detailed Engineering Design)",
+            "Модуль 8: Снабжение (Procurement), стадия Pre-Award",
+            "Модуль 9: Снабжение (Procurement), стадия Post-Award",
+            "Модуль 10: Префабрикация и строительство (Prefabrication & Construction)",
+            "Модуль 11: Пусконаладочные работы и ввод объекта в эксплуатацию (Commissioning & Handover)",
+            "Модуль 12: Важность персональной миссии (Икигай) и планирования для счастливой жизни"
+        ];
+
+        const modulesContainer = document.querySelector('.space-y-6'); // Контейнер для модулей в форме
+
+        modules.forEach((moduleText, index) => {
+            const moduleId = `module${index + 1}`;
+            const moduleElement = `
+                <div class="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
+                    <label class="block text-md font-medium text-sky-300 mb-2">${moduleText}:</label>
+                    <div class="rating-stars-container">
+                        <input type="radio" id="${moduleId}-5" name="${moduleId}" value="5"><label for="${moduleId}-5" title="Отлично">★</label>
+                        <input type="radio" id="${moduleId}-4" name="${moduleId}" value="4"><label for="${moduleId}-4" title="Хорошо">★</label>
+                        <input type="radio" id="${moduleId}-3" name="${moduleId}" value="3"><label for="${moduleId}-3" title="Удовлетворительно">★</label>
+                        <input type="radio" id="${moduleId}-2" name="${moduleId}" value="2"><label for="${moduleId}-2" title="Неудовлетворительно">★</label>
+                        <input type="radio" id="${moduleId}-1" name="${moduleId}" value="1"><label for="${moduleId}-1" title="Плохо">★</label>
+                    </div>
+                </div>
+            `;
+            modulesContainer.innerHTML += moduleElement;
+        });
+
+        const form = document.getElementById('feedbackForm');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const formDataJsonOutput = document.getElementById('formDataJson');
+        const copyButton = document.getElementById('copyButton');
+        const copyMessage = document.getElementById('copyMessage');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+            const formData = new FormData(form);
+            const data = {};
+            // Добавляем информацию о курсе и инструкторе
+            data['Курс'] = "Project management";
+            data['Компания'] = "Advanced People";
+            data['Инструктор'] = "Сергей Шумилов";
+            data['Дата отзыва'] = new Date().toLocaleString('ru-RU');
+
+
+            for (let [key, value] of formData.entries()) {
+                // Для модулей и общей оценки, если значение есть, преобразуем в число
+                if ((key.startsWith('module') || key === 'overallSatisfaction') && value) {
+                     data[key] = parseInt(value, 10);
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            // Форматируем названия модулей для вывода
+            const formattedData = {};
+            for (const key in data) {
+                if (key.startsWith('module')) {
+                    const moduleIndex = parseInt(key.replace('module', ''), 10) - 1;
+                    if (modules[moduleIndex]) {
+                         formattedData[modules[moduleIndex]] = data[key] || "Нет оценки";
+                    }
+                } else {
+                    formattedData[key] = data[key] || "Нет ответа";
+                }
+            }
+
+
+            formDataJsonOutput.textContent = JSON.stringify(formattedData, null, 2); // Выводим JSON с отступами
+            resultsContainer.classList.remove('hidden'); // Показываем контейнер с результатами
+            form.classList.add('hidden'); // Скрываем форму
+
+            // Прокрутка к результатам
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(formDataJsonOutput.textContent)
+                .then(()_ => {
+                    copyMessage.classList.remove('hidden');
+                    setTimeout(() => {
+                        copyMessage.classList.add('hidden');
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Ошибка копирования: ', err);
+                    copyMessage.textContent = 'Ошибка при копировании!';
+                    copyMessage.classList.remove('hidden');
+                     copyMessage.classList.remove('text-emerald-400');
+                    copyMessage.classList.add('text-red-400');
+                });
+        });
+    </script>
+</body>
+</html>

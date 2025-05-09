@@ -32,6 +32,19 @@
             flex-direction: row-reverse; /* Разворачиваем порядок звезд для правильного :hover ~ label */
             justify-content: flex-end;
         }
+        .loader {
+            border: 5px solid #f3f3f3; /* Серый фон загрузчика */
+            border-top: 5px solid #3498db; /* Синий цвет анимации загрузчика */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -39,7 +52,7 @@
 
     <div class="bg-slate-800 shadow-2xl rounded-xl p-6 sm:p-8 md:p-10 w-full max-w-3xl">
         <header class="text-center mb-8">
-            <img src="https://placehold.co/150x50/0f172a/e0e7ff?text=Advanced+People" alt="Логотип Advanced People" class="mx-auto mb-4 h-12 rounded-lg">
+            <img src="https://placehold.co/150x50/0f172a/e0e7ff?text=Advanced+People" alt="Логотип Advanced People" class="mx-auto mb-4 h-12 rounded-lg" onerror="this.onerror=null; this.src='https://placehold.co/150x50/0f172a/e0e7ff?text=Logo';">
             <h1 class="text-3xl sm:text-4xl font-bold text-sky-400">Обратная связь по курсу</h1>
             <p class="text-xl sm:text-2xl mt-2 text-sky-300">"Project management"</p>
             <p class="text-md sm:text-lg mt-1 text-gray-400">Инструктор: Сергей Шумилов</p>
@@ -55,7 +68,7 @@
             <div>
                 <label for="overallSatisfaction" class="block text-lg font-medium text-sky-300 mb-2">1. Общая удовлетворенность курсом:</label>
                 <div class="rating-stars-container">
-                    <input type="radio" id="overall-5" name="overallSatisfaction" value="5"><label for="overall-5" title="Отлично">★</label>
+                    <input type="radio" id="overall-5" name="overallSatisfaction" value="5" required><label for="overall-5" title="Отлично">★</label>
                     <input type="radio" id="overall-4" name="overallSatisfaction" value="4"><label for="overall-4" title="Хорошо">★</label>
                     <input type="radio" id="overall-3" name="overallSatisfaction" value="3"><label for="overall-3" title="Удовлетворительно">★</label>
                     <input type="radio" id="overall-2" name="overallSatisfaction" value="2"><label for="overall-2" title="Неудовлетворительно">★</label>
@@ -65,7 +78,7 @@
 
             <div>
                 <label for="recommendCourse" class="block text-lg font-medium text-sky-300 mb-2">2. Какова вероятность, что Вы порекомендуете этот курс коллегам/друзьям?</label>
-                <select id="recommendCourse" name="recommendCourse" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                <select id="recommendCourse" name="recommendCourse" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150" required>
                     <option value="">Выберите вариант</option>
                     <option value="10">10 - Обязательно порекомендую</option>
                     <option value="9">9</option>
@@ -80,8 +93,8 @@
                 </select>
             </div>
 
-            <h2 class="text-2xl font-semibold text-sky-400 pt-4 border-t border-slate-700">3. Оцените, пожалуйста, каждый модуль курса:</h2>
-            <div class="space-y-6">
+            <h2 class="text-2xl font-semibold text-sky-400 pt-4 border-t border-slate-700">3. Оцените, пожалуйста, каждый модуль курса (обязательно для каждого модуля):</h2>
+            <div id="modulesContainer" class="space-y-6">
                 </div>
 
             <div>
@@ -98,21 +111,12 @@
                 <textarea id="instructorFeedback" name="instructorFeedback" rows="4" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150" placeholder="Оцените ясность объяснений, ответы на вопросы, вовлеченность и т.д."></textarea>
             </div>
 
-
-            <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50">
+            <button type="submit" id="submitButton" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50">
                 Отправить отзыв
             </button>
+            <div id="loader" class="loader hidden"></div>
+            <p id="submitMessage" class="text-center mt-4 text-lg"></p>
         </form>
-
-        <div id="resultsContainer" class="mt-10 p-6 bg-slate-700 rounded-lg shadow-inner hidden">
-            <h2 class="text-2xl font-semibold text-sky-400 mb-4">Спасибо за Ваш отзыв!</h2>
-            <p class="text-gray-300 mb-4">Пожалуйста, скопируйте текст ниже и сохраните его, или отправьте инструктору:</p>
-            <pre id="formDataJson" class="whitespace-pre-wrap break-all bg-slate-900 text-sky-300 p-4 rounded-md text-sm overflow-x-auto"></pre>
-            <button id="copyButton" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150">
-                Копировать данные
-            </button>
-            <p id="copyMessage" class="text-emerald-400 text-sm mt-2 hidden">Данные скопированы в буфер обмена!</p>
-        </div>
     </div>
 
     <footer class="text-center py-8 text-gray-500">
@@ -120,6 +124,10 @@
     </footer>
 
     <script>
+        // ВАЖНО: Замените эту переменную на URL вашего РАЗВЕРНУТОГО Google Apps Script
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzF3Z1s4A0sJt48nhKaMA1INKexrRhNtlcY7PvgbFaKRDWuxvGMaNgg3VDg1dFk5O23/exec"; 
+
+        // Список модулей курса
         const modules = [
             "Модуль 1: Основные понятия и обзор проектного менеджмента",
             "Модуль 2: «Мягкие навыки» (Soft Skills)",
@@ -135,15 +143,16 @@
             "Модуль 12: Важность персональной миссии (Икигай) и планирования для счастливой жизни"
         ];
 
-        const modulesContainer = document.querySelector('.space-y-6'); // Контейнер для модулей в форме
+        const modulesContainer = document.getElementById('modulesContainer'); // Контейнер для динамической вставки модулей
 
+        // Динамическое создание полей для оценки каждого модуля
         modules.forEach((moduleText, index) => {
-            const moduleId = `module${index + 1}`;
+            const moduleId = `module${index + 1}_rating`; // Уникальное имя для группы радиокнопок
             const moduleElement = `
                 <div class="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
                     <label class="block text-md font-medium text-sky-300 mb-2">${moduleText}:</label>
                     <div class="rating-stars-container">
-                        <input type="radio" id="${moduleId}-5" name="${moduleId}" value="5"><label for="${moduleId}-5" title="Отлично">★</label>
+                        <input type="radio" id="${moduleId}-5" name="${moduleId}" value="5" required><label for="${moduleId}-5" title="Отлично">★</label>
                         <input type="radio" id="${moduleId}-4" name="${moduleId}" value="4"><label for="${moduleId}-4" title="Хорошо">★</label>
                         <input type="radio" id="${moduleId}-3" name="${moduleId}" value="3"><label for="${moduleId}-3" title="Удовлетворительно">★</label>
                         <input type="radio" id="${moduleId}-2" name="${moduleId}" value="2"><label for="${moduleId}-2" title="Неудовлетворительно">★</label>
@@ -155,69 +164,90 @@
         });
 
         const form = document.getElementById('feedbackForm');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const formDataJsonOutput = document.getElementById('formDataJson');
-        const copyButton = document.getElementById('copyButton');
-        const copyMessage = document.getElementById('copyMessage');
+        const submitButton = document.getElementById('submitButton');
+        const loader = document.getElementById('loader'); // Элемент для анимации загрузки
+        const submitMessage = document.getElementById('submitMessage'); // Элемент для вывода сообщений
 
+
+        // Обработчик события отправки формы
         form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Предотвращаем стандартную отправку формы
+            event.preventDefault(); // Предотвращаем стандартное поведение формы (перезагрузку страницы)
+            
+            // Проверка, что URL скрипта был заменен
+            if (SCRIPT_URL === "ВАШ_URL_GOOGLE_APPS_SCRIPT_ДЛЯ_DOCS" || !SCRIPT_URL) {
+                submitMessage.textContent = "Ошибка: URL скрипта Google Apps Script не настроен в HTML коде!";
+                submitMessage.className = "text-center mt-4 text-lg text-red-400"; // Стиль для сообщения об ошибке
+                return;
+            }
 
-            const formData = new FormData(form);
-            const data = {};
-            // Добавляем информацию о курсе и инструкторе
+            submitButton.disabled = true; // Блокируем кнопку на время отправки
+            loader.classList.remove('hidden'); // Показываем анимацию загрузки
+            submitMessage.textContent = ""; // Очищаем предыдущие сообщения
+
+            const formData = new FormData(form); // Собираем данные из формы
+            const data = {}; // Объект для хранения данных
+            // Добавляем статическую информацию о курсе
+            data['Дата отзыва'] = new Date().toLocaleString('ru-RU');
             data['Курс'] = "Project management";
             data['Компания'] = "Advanced People";
             data['Инструктор'] = "Сергей Шумилов";
-            data['Дата отзыва'] = new Date().toLocaleString('ru-RU');
 
-
+            // Обрабатываем данные из полей формы
             for (let [key, value] of formData.entries()) {
-                // Для модулей и общей оценки, если значение есть, преобразуем в число
-                if ((key.startsWith('module') || key === 'overallSatisfaction') && value) {
-                     data[key] = parseInt(value, 10);
+                if (key.startsWith('module') && key.endsWith('_rating')) {
+                    // Для оценок модулей используем полное название модуля как ключ
+                    const moduleIndex = parseInt(key.split('_')[0].replace('module', ''), 10) - 1;
+                    if (modules[moduleIndex]) {
+                         data[modules[moduleIndex]] = value ? parseInt(value, 10) : "Нет оценки";
+                    }
+                } else if (key === 'overallSatisfaction' && value) {
+                    data[key] = parseInt(value, 10); // Преобразуем оценку в число
                 } else {
-                    data[key] = value;
+                    data[key] = value || "Нет ответа"; // Если поле пустое, ставим "Нет ответа"
                 }
             }
             
-            // Форматируем названия модулей для вывода
-            const formattedData = {};
-            for (const key in data) {
-                if (key.startsWith('module')) {
-                    const moduleIndex = parseInt(key.replace('module', ''), 10) - 1;
-                    if (modules[moduleIndex]) {
-                         formattedData[modules[moduleIndex]] = data[key] || "Нет оценки";
-                    }
+            // Удаляем временные ключи рейтингов модулей, если они случайно попали (на всякий случай)
+             modules.forEach((_, index) => { 
+                delete data[`module${index + 1}_rating`];
+            });
+
+            // Отправка данных на Google Apps Script
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors', // Необходимо для кросс-доменных запросов
+                cache: 'no-cache', // Не кешировать запрос
+                headers: {
+                    // Важно: Apps Script doPost ожидает данные в e.postData.contents как строку.
+                    // Если отправлять 'Content-Type': 'application/json', то Apps Script может неверно распарсить.
+                    // Поэтому отправляем как text/plain, а в скрипте делаем JSON.parse(e.postData.contents).
+                    'Content-Type': 'text/plain', 
+                },
+                body: JSON.stringify(data) // Преобразуем объект JavaScript в JSON-строку
+            })
+            .then(response => response.json()) // Ожидаем JSON-ответ от скрипта
+            .then(resData => {
+                loader.classList.add('hidden'); // Скрываем анимацию загрузки
+                if (resData.result === "success") {
+                    submitMessage.textContent = resData.message || 'Спасибо! Ваш отзыв успешно сохранен.';
+                    // Можно добавить ссылку на созданный документ (для отладки или если это нужно пользователю)
+                    // if(resData.docUrl) { console.log("Документ создан: " + resData.docUrl); }
+                    submitMessage.className = 'text-center mt-4 text-lg text-emerald-400'; // Стиль для успешного сообщения
+                    form.reset(); // Очищаем поля формы
                 } else {
-                    formattedData[key] = data[key] || "Нет ответа";
+                    submitMessage.textContent = 'Произошла ошибка: ' + (resData.message || 'Не удалось сохранить отзыв.');
+                    submitMessage.className = 'text-center mt-4 text-lg text-red-400'; // Стиль для сообщения об ошибке
+                    console.error("Ошибка от Apps Script:", resData.message);
                 }
-            }
-
-
-            formDataJsonOutput.textContent = JSON.stringify(formattedData, null, 2); // Выводим JSON с отступами
-            resultsContainer.classList.remove('hidden'); // Показываем контейнер с результатами
-            form.classList.add('hidden'); // Скрываем форму
-
-            // Прокрутка к результатам
-            resultsContainer.scrollIntoView({ behavior: 'smooth' });
-        });
-
-        copyButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(formDataJsonOutput.textContent)
-                .then(()_ => {
-                    copyMessage.classList.remove('hidden');
-                    setTimeout(() => {
-                        copyMessage.classList.add('hidden');
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error('Ошибка копирования: ', err);
-                    copyMessage.textContent = 'Ошибка при копировании!';
-                    copyMessage.classList.remove('hidden');
-                     copyMessage.classList.remove('text-emerald-400');
-                    copyMessage.classList.add('text-red-400');
-                });
+                submitButton.disabled = false; // Разблокируем кнопку
+            })
+            .catch(error => {
+                loader.classList.add('hidden'); // Скрываем анимацию загрузки
+                submitMessage.textContent = 'Сетевая ошибка или ошибка сервера: ' + error.message + '. Пожалуйста, попробуйте еще раз.';
+                submitMessage.className = 'text-center mt-4 text-lg text-red-400'; // Стиль для сообщения об ошибке
+                console.error('Ошибка при отправке fetch:', error);
+                submitButton.disabled = false; // Разблокируем кнопку
+            });
         });
     </script>
 </body>

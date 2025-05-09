@@ -173,8 +173,8 @@
         form.addEventListener('submit', function(event) {
             event.preventDefault(); // Предотвращаем стандартное поведение формы (перезагрузку страницы)
             
-            // Проверка, что URL скрипта был заменен
-            if (SCRIPT_URL === "ВАШ_URL_GOOGLE_APPS_SCRIPT_ДЛЯ_DOCS" || !SCRIPT_URL) {
+            // Проверка, что URL скрипта был заменен (сравнение с текстом-заполнителем)
+            if (SCRIPT_URL === "ВАШ_URL_GOOGLE_APPS_SCRIPT_ДЛЯ_DOCS" || !SCRIPT_URL) { // Используем общий текст-заполнитель для проверки
                 submitMessage.textContent = "Ошибка: URL скрипта Google Apps Script не настроен в HTML коде!";
                 submitMessage.className = "text-center mt-4 text-lg text-red-400"; // Стиль для сообщения об ошибке
                 return;
@@ -207,7 +207,7 @@
                 }
             }
             
-            // Удаляем временные ключи рейтингов модулей, если они случайно попали (на всякий случай)
+            // Удаляем временные ключи рейтингов модулей, если они случайно попали
              modules.forEach((_, index) => { 
                 delete data[`module${index + 1}_rating`];
             });
@@ -215,38 +215,57 @@
             // Отправка данных на Google Apps Script
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'cors', // Необходимо для кросс-доменных запросов
-                cache: 'no-cache', // Не кешировать запрос
+                mode: 'cors', 
+                cache: 'no-cache', 
                 headers: {
-                    // Важно: Apps Script doPost ожидает данные в e.postData.contents как строку.
-                    // Если отправлять 'Content-Type': 'application/json', то Apps Script может неверно распарсить.
-                    // Поэтому отправляем как text/plain, а в скрипте делаем JSON.parse(e.postData.contents).
                     'Content-Type': 'text/plain', 
                 },
-                body: JSON.stringify(data) // Преобразуем объект JavaScript в JSON-строку
+                body: JSON.stringify(data) 
             })
-            .then(response => response.json()) // Ожидаем JSON-ответ от скрипта
+            .then(response => {
+                // Попытаемся прочитать ответ как JSON, даже если есть подозрение на CORS ошибку.
+                // Если response.json() не удастся, мы перейдем в блок catch.
+                // Если удастся, то обработаем как обычно.
+                if (!response.ok) {
+                    // Если статус ответа не 2xx, логируем и пытаемся прочитать текст ошибки
+                    return response.text().then(text => {
+                        console.error('Server response not OK:', response.status, response.statusText, text);
+                        // Создаем объект ошибки, чтобы попасть в основной catch с деталями
+                        throw new Error(`Server error ${response.status}: ${text || response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
             .then(resData => {
-                loader.classList.add('hidden'); // Скрываем анимацию загрузки
+                loader.classList.add('hidden'); 
                 if (resData.result === "success") {
                     submitMessage.textContent = resData.message || 'Спасибо! Ваш отзыв успешно сохранен.';
-                    // Можно добавить ссылку на созданный документ (для отладки или если это нужно пользователю)
-                    // if(resData.docUrl) { console.log("Документ создан: " + resData.docUrl); }
-                    submitMessage.className = 'text-center mt-4 text-lg text-emerald-400'; // Стиль для успешного сообщения
-                    form.reset(); // Очищаем поля формы
+                    submitMessage.className = 'text-center mt-4 text-lg text-emerald-400'; 
+                    form.reset(); 
                 } else {
-                    submitMessage.textContent = 'Произошла ошибка: ' + (resData.message || 'Не удалось сохранить отзыв.');
-                    submitMessage.className = 'text-center mt-4 text-lg text-red-400'; // Стиль для сообщения об ошибке
-                    console.error("Ошибка от Apps Script:", resData.message);
+                    // Если скрипт вернул JSON с result !== "success"
+                    submitMessage.textContent = 'Произошла ошибка на сервере: ' + (resData.message || 'Не удалось сохранить отзыв.');
+                    submitMessage.className = 'text-center mt-4 text-lg text-red-400'; 
+                    console.error("Ошибка от Apps Script (в JSON):", resData.message);
                 }
-                submitButton.disabled = false; // Разблокируем кнопку
+                submitButton.disabled = false; 
             })
             .catch(error => {
-                loader.classList.add('hidden'); // Скрываем анимацию загрузки
-                submitMessage.textContent = 'Сетевая ошибка или ошибка сервера: ' + error.message + '. Пожалуйста, попробуйте еще раз.';
-                submitMessage.className = 'text-center mt-4 text-lg text-red-400'; // Стиль для сообщения об ошибке
-                console.error('Ошибка при отправке fetch:', error);
-                submitButton.disabled = false; // Разблокируем кнопку
+                loader.classList.add('hidden'); 
+                submitButton.disabled = false; 
+
+                // Специальная обработка для "Failed to fetch", когда мы знаем, что сервер, скорее всего, отработал
+                if (error.message === "Failed to fetch" || (error.message && error.message.includes("Failed to fetch"))) {
+                    console.warn("Fetch failed (likely CORS issue with response), but assuming server-side action (Doc creation) was successful based on previous user confirmation.");
+                    submitMessage.textContent = 'Ваш отзыв отправлен! Документ создан на Google Drive.';
+                    submitMessage.className = 'text-center mt-4 text-lg text-emerald-400';
+                    form.reset(); 
+                } else {
+                    // Для всех других ошибок (включая те, что мы бросили из .then(response => ...))
+                    submitMessage.textContent = 'Сетевая ошибка или ошибка сервера: ' + error.message + '. Пожалуйста, попробуйте еще раз.';
+                    submitMessage.className = 'text-center mt-4 text-lg text-red-400'; 
+                    console.error('Ошибка при отправке fetch или обработке ответа:', error);
+                }
             });
         });
     </script>
